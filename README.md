@@ -10,5 +10,7 @@ MediaPipe detects hand landmarks (finger and palm positions).
 Gestures are translated into commands:
 
 Move hand → rotate Saturn
+
 Pinch gesture → zoom in/out
+
 Open palm → reset or interact with objects
