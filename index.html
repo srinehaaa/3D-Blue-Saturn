@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>3D Blue Saturn - Interactive Dust Particles</title>
-    <!-- MediaPipe Kitabxanaları -->
+    <!--MediaPipe Libraries-->
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -21,24 +21,12 @@
     </style>
 </head>
 <body>
-    <div id="scoreboard"
-    style="
-    position:absolute;
-    top:20px;
-    left:20px;
-    color:white;
-    font-size:30px;
-    z-index:100;">
-    Score: 0
-</div>
 
-    <div id="loading-msg">System loading...<br><small>Allow camera access</small></div>
+    <div id="loading-msg">Sistem yüklənir...<br><small>Kameraya icazə verin</small></div>
     <video id="input-video" playsinline></video>
 
     <script>
         let scene, camera, renderer, saturn, rings, stars;
-        let planets = [];
-        let score = 0;
         let handGroup, handSkeleton, handPoints;
         let lastHandPos = null;
         let currentHandCenter = new THREE.Vector3(0, 0, 0); 
@@ -61,7 +49,7 @@
             renderer.setSize(window.innerWidth, window.innerHeight);
             document.body.appendChild(renderer.domElement);
 
-            // Saturn
+            // Saturn 
             const saturnGeo = new THREE.SphereGeometry(4, 64, 64);
             const saturnMat = new THREE.PointsMaterial({ color: 0x0088ff, size: 0.04 }); // Parlaq mavi
             saturn = new THREE.Points(saturnGeo, saturnMat);
@@ -72,42 +60,8 @@
                 saturnOrigPos.push(sPos[i], sPos[i+1], sPos[i+2]);
                 saturnRandomDirs.push((Math.random() - 0.5) * 3, (Math.random() - 0.5) * 3, (Math.random() - 0.5) * 3);
             }
-            function createPlanet() {
-                const colors = [
-                    0xff4444,
-                    0x44ff44,
-                    0xffff44,
-                    0xff8844,
-                    0x8888ff
-                ];
-                const geometry = new THREE.SphereGeometry(0.5, 32, 32);
-                const material = new THREE.MeshBasicMaterial({
-                    color: colors[Math.floor(Math.random() * colors.length)]
-                });
-                const planet = new THREE.Mesh(geometry, material);
-                planet.position.set(
-                    (Math.random() - 0.5) * 20,
-                    (Math.random() - 0.5) * 10,
-                    (Math.random() - 0.5) * 5
-                );
-                scene.add(planet);
-                planets.push(planet);
-            }
-            function checkPlanetCollection() {
-                planets.forEach((planet, index) => {
-                    const distance = planet.position.distanceTo(
-                        currentHandCenter
-                    );
-                    if (distance < 1.5) {
-                        scene.remove(planet);
-                        planets.splice(index, 1);
-                        score += 10;
-                        document.getElementById("scoreboard")
-                        .innerText = "Score: " + score;
-                    }
-                });
-            }
-            // Rings 
+
+            // Rings
             const ringCount = 12000;
             const ringGeo = new THREE.BufferGeometry();
             const rPositions = new Float32Array(ringCount * 3);
@@ -128,7 +82,7 @@
             rings.rotation.x = Math.PI / 3;
             scene.add(rings);
 
-            //Stars
+            // Stars
             const starGeo = new THREE.BufferGeometry();
             const starPos = new Float32Array(4000 * 3);
             for(let i=0; i<4000*3; i++) starPos[i] = (Math.random()-0.5) * 1000;
@@ -184,7 +138,7 @@
                 let z = saturnOrigPos[i3+2] + saturnRandomDirs[i3+2] * explosionFactor;
 
                 if (isExploded) {
-                    // Attraction speed increased (0.05 -> 0.08)
+                    // Cəlb olunma sürəti artırıldı (0.05 -> 0.08)
                     x = THREE.MathUtils.lerp(x, attractionVector.x, 0.08);
                     y = THREE.MathUtils.lerp(y, attractionVector.y, 0.08);
                     z = THREE.MathUtils.lerp(z, attractionVector.z, 0.08);
@@ -227,11 +181,9 @@
         }
 
         function animate() {
-             requestAnimationFrame(animate);
-             updateExplosion();
-             
-             checkPlanetCollection();
-             if (!isExploded && !lastHandPos && saturn && rings) {
+            requestAnimationFrame(animate);
+            updateExplosion();
+            if (!isExploded && !lastHandPos && saturn && rings) {
                 saturn.rotation.y += 0.002;
                 rings.rotation.z += 0.001;
             }
@@ -240,11 +192,10 @@
 
         async function startApp() {
             initThree();
-            setInterval(() => {
-                createPlanet();
-            }, 3000);
+
             const videoElement = document.getElementById('input-video');
             const loadingMsg = document.getElementById('loading-msg');
+            
             const hands = new Hands({
                 locateFile: (file) => {
                     return `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`;
@@ -345,7 +296,7 @@
                         processFrame();
                     };
                 } catch (err) {
-                    if(loadingMsg) loadingMsg.innerText = "Xəta: Kameraya giriş mümkün deyil.";
+                    if(loadingMsg) loadingMsg.innerText = "Error: Unable to access the camera.";
                 }
             }
         }
